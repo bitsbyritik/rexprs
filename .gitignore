@@ -1,0 +1,9 @@
+# .gitignore
+node_modules/
+dist/
+.nyc_output/
+coverage/
+.env
+.DS_Store
+*.log
+

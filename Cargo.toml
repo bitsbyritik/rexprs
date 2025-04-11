@@ -1,0 +1,2 @@
+[workspace]
+members = ["crates/rexprs-core", "crates/rexprs-js"]

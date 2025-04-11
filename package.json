@@ -1,0 +1,33 @@
+{
+  "name": "rexprs",
+  "version": "0.0.1",
+  "description": "Blazing-fast Rust alternative to Express.js using napi-rs and prebuilt binaries.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "version": "changeset version",
+    "release": "changeset publish"
+  },
+  "keywords": [
+    "rust",
+    "express",
+    "framework",
+    "napi",
+    "nodejs",
+    "http",
+    "server"
+  ],
+  "author": "bitsbyritik",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitsbyritik/rexprs"
+  },
+  "bugs": {
+    "url": "https://github.com/bitsbyritik/rexprs/issues"
+  },
+  "homepage": "https://github.com/bitsbyritik/rexprs#readme",
+  "devDependencies": {
+    "@changesets/cli": "^2.28.1"
+  }
+}
