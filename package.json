@@ -12,25 +12,6 @@
     "version-packages": "changeset version",
     "release": "npm run build && changeset publish"
   },
-  "keywords": [
-    "rust",
-    "express",
-    "framework",
-    "napi",
-    "nodejs",
-    "http",
-    "server"
-  ],
-  "author": "bitsbyritik",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bitsbyritik/rexprs"
-  },
-  "bugs": {
-    "url": "https://github.com/bitsbyritik/rexprs/issues"
-  },
-  "homepage": "https://github.com/bitsbyritik/rexprs#readme",
   "devDependencies": {
     "@changesets/cli": "^2.28.1"
   }

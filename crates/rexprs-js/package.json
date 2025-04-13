@@ -36,5 +36,24 @@
     "rexprs-darwin-x64": "0.0.2",
     "rexprs-linux-x64-gnu": "0.0.2",
     "rexprs-darwin-arm64": "0.0.2"
-  }
+  },
+  "keywords": [
+    "rust",
+    "express",
+    "framework",
+    "napi",
+    "nodejs",
+    "http",
+    "server"
+  ],
+  "author": "bitsbyritik",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitsbyritik/rexprs"
+  },
+  "bugs": {
+    "url": "https://github.com/bitsbyritik/rexprs/issues"
+  },
+  "homepage": "https://github.com/bitsbyritik/rexprs#readme"
 }
