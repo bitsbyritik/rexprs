@@ -2,11 +2,15 @@
   "name": "rexprs",
   "version": "0.0.1",
   "description": "Blazing-fast Rust alternative to Express.js using napi-rs and prebuilt binaries.",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "crates/rexprs-js"
+  ],
   "scripts": {
-    "start": "node index.js",
-    "version": "changeset version",
-    "release": "changeset publish"
+    "build": "cd crates/rexprs-js && npm run build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish"
   },
   "keywords": [
     "rust",

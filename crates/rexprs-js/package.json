@@ -1,0 +1,40 @@
+{
+  "name": "rexprs",
+  "version": "0.0.2",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "napi": {
+    "name": "rexprs",
+    "package": {
+      "name": "rexprs",
+      "binaryPath": "../../target/release"
+    },
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "aarch64-apple-darwin",
+        "x86_64-apple-darwin",
+        "x86_64-pc-windows-msvc"
+      ]
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
+  "scripts": {
+    "build": "napi build --release --platform",
+    "build:debug": "napi build",
+    "prepublishOnly": "napi prepublish -t npm"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.4"
+  },
+  "optionalDependencies": {
+    "rexprs-win32-x64-msvc": "0.0.2",
+    "rexprs-darwin-x64": "0.0.2",
+    "rexprs-linux-x64-gnu": "0.0.2",
+    "rexprs-darwin-arm64": "0.0.2"
+  }
+}

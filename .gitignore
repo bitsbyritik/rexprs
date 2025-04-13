@@ -1,9 +1,38 @@
-# .gitignore
+# Node.js / npm
 node_modules/
-dist/
-.nyc_output/
-coverage/
-.env
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
+
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build artifacts
+/dist/
+/build/
+/*.node
+*.d.ts
+
+# Debug logs
 *.log
 
+test/

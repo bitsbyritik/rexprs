@@ -1,6 +1,22 @@
 [package]
-name = "xprs-js"
-version = "0.1.0"
+name = "rexprs-js"
+version = "0.0.1"
 edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
+napi = { version = "2.16.17", features = ["napi8", "tokio_rt"] }
+napi-derive = "2.16.13"
+rexprs-core = { path = "../rexprs-core" }
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros"] }
+futures = "0.3"
+
+[build-dependencies]
+napi-build = "2"
+
+[profile.release]
+lto = true
+strip = "symbols"

@@ -1,14 +1,35 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use napi::bindgen_prelude::*;
+use napi_derive::napi;
+use rexprs_core::RexprsServer;
+use tokio::runtime::Runtime;
+
+#[napi]
+pub struct Rexprs {
+    inner: RexprsServer,
+    rt: Runtime,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[napi]
+impl Rexprs {
+    #[napi(constructor)]
+    pub fn new() -> Result<Self> {
+        Ok(Rexprs {
+            inner: RexprsServer::new(),
+            rt: Runtime::new().map_err(|e| {
+                Error::new(
+                    Status::GenericFailure,
+                    format!("Failed to create Tokio runtime: {}", e),
+                )
+            })?,
+        })
+    }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    #[napi]
+    pub fn listen(&mut self, port: u16) -> Result<()> {
+        self.rt
+            .block_on(self.inner.listen(port))
+            .map_err(|e| Error::new(Status::GenericFailure, e.to_string()))?;
+
+        Ok(())
     }
 }
