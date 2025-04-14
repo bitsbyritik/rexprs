@@ -41,6 +41,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Prepare for publish
+        run: npm run prepublishOnly
+        working-directory: crates/rexprs-js
+
       - name: Publish to npm
         id: changesets
         uses: changesets/action@v1

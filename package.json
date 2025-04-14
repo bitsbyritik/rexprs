@@ -1,6 +1,6 @@
 {
   "name": "rexprs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Blazing-fast Rust alternative to Express.js using napi-rs and prebuilt binaries.",
   "private": true,
   "workspaces": [
