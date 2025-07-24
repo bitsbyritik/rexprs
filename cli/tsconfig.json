@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "module": "CommonJS", // for CLI compatibility
+    "target": "ES2020"
+  },
+  "include": ["bin/**/*", "templates/**/*"]
+}

@@ -1,6 +1,6 @@
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
-use rexprs_core::RexprsServer;
+use rexprs_core::server::RexprsServer;
 use tokio::runtime::Runtime;
 
 #[napi]
