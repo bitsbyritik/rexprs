@@ -1,11 +1,11 @@
 use crate::http::error::create_error_response;
-use crate::router::Router;
+use crate::router::{Handler, Router};
 use http_body_util::Full;
 use http_body_util::combinators::BoxBody;
 use hyper::body::{Bytes, Incoming};
 use hyper::server::conn::http1;
 use hyper::service::service_fn;
-use hyper::{Request, Response, StatusCode};
+use hyper::{Method, Request, Response, StatusCode};
 use hyper_util::rt::TokioIo;
 use std::sync::Arc;
 use std::{convert::Infallible, error::Error, net::SocketAddr};
@@ -24,8 +24,14 @@ impl RexprsServer {
         }
     }
 
-    pub fn set_router(&mut self, router: Router) {
-        self.router = Some(router);
+    pub fn add_route(&mut self, method: Method, path: &str, handler: Handler) {
+        if self.router.is_none() {
+            self.router = Some(Router::new());
+        }
+
+        if let Some(router) = &mut self.router {
+            router.add_route(method, path, handler);
+        }
     }
 
     pub async fn listen(&mut self, port: u16) -> Result<(), Box<dyn Error + Send + Sync>> {

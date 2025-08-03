@@ -4,12 +4,14 @@ use std::collections::HashMap;
 
 pub type Handler = RequestHandlerFn;
 
+#[derive(Clone)]
 pub struct Route {
     pub method: Method,
     pub path: String,
     pub handler: Handler,
 }
 
+#[derive(Default)]
 pub struct Router {
     routes: Vec<Route>,
 }
@@ -19,10 +21,10 @@ impl Router {
         Router { routes: Vec::new() }
     }
 
-    pub fn add_route(&mut self, method: Method, path: String, handler: Handler) {
+    pub fn add_route(&mut self, method: Method, path: &str, handler: Handler) {
         self.routes.push(Route {
             method,
-            path,
+            path: path.to_string(),
             handler,
         });
     }
