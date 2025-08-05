@@ -4,7 +4,7 @@ use napi_derive::napi;
 use std::{collections::HashMap, mem::take};
 use tokio::sync::oneshot;
 
-#[napi]
+#[napi(js_name = "Response")]
 pub struct Res {
     status_code: Option<u16>,
     headers: HashMap<String, String>,
@@ -15,19 +15,25 @@ pub struct Res {
 impl Res {
     #[napi(constructor)]
     pub fn new() -> Self {
-        unreachable!()
+        panic!("Res can only be created by the framework");
+    }
+
+    pub fn new_with_sender(sender: oneshot::Sender<JsResponse>) -> Self {
+        Self {
+            status_code: None,
+            headers: HashMap::new(),
+            sender: Some(sender),
+        }
     }
 
     #[napi]
-    pub fn status(&mut self, code: u16) -> &Self {
+    pub fn status(&mut self, code: u16) {
         self.status_code = Some(code);
-        self
     }
 
     #[napi]
-    pub fn header(&mut self, key: String, value: String) -> &Self {
+    pub fn header(&mut self, key: String, value: String) {
         self.headers.insert(key, value);
-        self
     }
 
     #[napi]

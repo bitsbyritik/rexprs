@@ -1,64 +1,64 @@
-use crate::bindings::types::{JsRequest, JsResponse};
-use hyper::{
-    Request, Response,
-    body::{Bytes, Incoming},
+use crate::bindings::{
+    js_res::convert_to_hyper_response,
+    res::Res,
+    types::{JsRequest, JsResponse},
 };
-use napi::threadsafe_function::ThreadsafeFunction;
-use rexprs_core::http::types::RequestHandlerFn;
-use std::{collections::HashMap, sync::Arc};
+use hyper::{Request, body::Incoming};
+use napi::{
+    Status,
+    bindgen_prelude::Promise,
+    threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode},
+};
+use rexprs_core::http::{error::internal_server_error, types::RequestHandlerFn};
+use std::sync::Arc;
+use tokio::sync::oneshot;
 
-pub fn create_handler(tsfn: ThreadsafeFunction<JsRequest, JsResponse>) -> RequestHandlerFn {
+pub fn create_handler(
+    tsfn: ThreadsafeFunction<(JsRequest, Res), Promise<()>, (JsRequest, Res), Status, false>,
+) -> RequestHandlerFn {
     let tsfn = Arc::new(tsfn);
     Arc::new(move |req: Request<Incoming>, params| {
         let tsfn = tsfn.clone();
         Box::pin(async move {
-            let headers = req
-                .headers()
-                .iter()
-                .filter_map(|(k, v)| Some((k.as_str().to_string(), v.to_str().ok()?.to_string())))
-                .collect::<HashMap<_, _>>();
-
-            let method = req.method().to_string();
-            let path = req.uri().path().to_string();
-            let query = req
-                .uri()
-                .query()
-                .map(|q| {
-                    url::form_urlencoded::parse(q.as_bytes())
-                        .into_owned()
-                        .collect::<HashMap<String, String>>()
-                })
-                .unwrap_or_default();
-
-            let js_req = JsRequest {
-                method,
-                path,
-                body: None,
-                headers: headers.clone(),
-                params,
-                query,
+            let js_req = match JsRequest::from_parts(req, params).await {
+                Ok(req) => req,
+                Err(_) => return internal_server_error(),
             };
+
+            let (tx, rx) = oneshot::channel::<JsResponse>();
+            let res = Res::new_with_sender(tx);
 
             println!("Before tsfn.call_async");
-            let js_res = JsResponse {
-                status_code: Some(200),
-                body: Some("pong from rust".to_string()),
-                headers: HashMap::new(),
-            };
-            println!("✅ Skipping JS, returning test response");
+            let promise_result = tsfn.call_async((js_req, res)).await;
             println!("After tsfn.call_async");
 
-            let status = js_res.status_code.unwrap_or(200);
-            let body = js_res.body.unwrap_or_default();
+            match promise_result {
+                Ok(promise) => {
+                    println!("Successfully called JS function, got promise");
 
-            let mut builder = Response::builder().status(status);
-            for (key, value) in js_res.headers {
-                builder = builder.header(&key, &value);
+                    match promise.await {
+                        Ok(_) => {
+                            println!("Promise resolved successfully");
+                        }
+                        Err(e) => {
+                            eprintln!("Promise rejected: {:?}", e);
+                            return internal_server_error();
+                        }
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Failed to call JS function: {:?}", e);
+                    return internal_server_error();
+                }
             }
 
-            builder
-                .body(Bytes::from(body))
-                .unwrap_or_else(|_| Response::new(Bytes::from("Failed to build response")))
+            match rx.await {
+                Ok(js_response) => {
+                    println!("Received response");
+                    convert_to_hyper_response(js_response)
+                }
+                Err(_) => internal_server_error(),
+            }
         })
     })
 }
