@@ -73,8 +73,9 @@ async fn handle_request(
     if let Some((handler, params)) = router.find_handler(method, path) {
         match tokio::time::timeout(std::time::Duration::from_secs(30), handler(req, params)).await {
             Ok(response) => {
-                let response = response.map(|bytes| BoxBody::new(Full::new(bytes)));
-                Ok(response)
+                let (parts, body) = response.into_parts();
+                let boxed_body = BoxBody::new(Full::new(body));
+                Ok(Response::from_parts(parts, boxed_body))
             }
             Err(_) => Ok(create_error_response(
                 StatusCode::REQUEST_TIMEOUT,
