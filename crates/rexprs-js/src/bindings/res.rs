@@ -38,7 +38,10 @@ impl Res {
 
     #[napi]
     pub fn send(&mut self, body: String) -> Result<()> {
-        self.try_send(Some(body))
+        println!("res.send() called with body: {}", body);
+        let result = self.try_send(Some(body));
+        println!("res.send() completed with result: {:?}", result);
+        result
     }
 
     fn try_send(&mut self, body: Option<String>) -> Result<()> {

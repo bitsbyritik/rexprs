@@ -1,5 +1,5 @@
 use crate::bindings::res::Res;
-use crate::bindings::types::{JsRequest, JsResponse};
+use crate::bindings::types::JsRequest;
 use crate::handler::create_handler;
 use hyper::Method;
 use napi::bindgen_prelude::*;
@@ -60,7 +60,9 @@ impl Rexprs {
         path: &str,
         callback: Function<(JsRequest, Res), Promise<()>>,
     ) -> Result<()> {
-        let tsfn = callback.build_threadsafe_function().build()?;
+        let tsfn = callback
+            .build_threadsafe_function::<(JsRequest, Res)>()
+            .build()?;
 
         let handler = create_handler(tsfn);
         self.inner.add_route(method, path, handler);

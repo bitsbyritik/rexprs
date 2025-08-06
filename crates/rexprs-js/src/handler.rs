@@ -28,37 +28,32 @@ pub fn create_handler(
             let (tx, rx) = oneshot::channel::<JsResponse>();
             let res = Res::new_with_sender(tx);
 
-            println!("Before tsfn.call_async");
-            let promise_result = tsfn.call_async((js_req, res)).await;
+            // let promise = match tsfn.call_async((js_req, res)).await {
+            //     Ok(promise) => promise,
+            //     Err(e) => {
+            //         eprintln!("Failed to call JS function: {:?}", e);
+            //         return internal_server_error();
+            //     }
+            // };
+            tsfn.call((js_req, res), ThreadsafeFunctionCallMode::NonBlocking);
             println!("After tsfn.call_async");
 
-            match promise_result {
-                Ok(promise) => {
-                    println!("Successfully called JS function, got promise");
-
-                    match promise.await {
-                        Ok(_) => {
-                            println!("Promise resolved successfully");
-                        }
-                        Err(e) => {
-                            eprintln!("Promise rejected: {:?}", e);
-                            return internal_server_error();
-                        }
-                    }
-                }
-                Err(e) => {
-                    eprintln!("Failed to call JS function: {:?}", e);
-                    return internal_server_error();
-                }
-            }
-
             match rx.await {
-                Ok(js_response) => {
-                    println!("Received response");
-                    convert_to_hyper_response(js_response)
-                }
+                Ok(js_res) => convert_to_hyper_response(js_res),
                 Err(_) => internal_server_error(),
             }
+            // match rx.await {
+            //     Ok(js_response) => {
+            //         // Then await the promise to ensure JS side completed
+            //         let _ = promise.await;
+            //         convert_to_hyper_response(js_response)
+            //     }
+            //     Err(_) => {
+            //         // If channel fails, still wait for promise to avoid unhandled rejection
+            //         let _ = promise.await;
+            //         internal_server_error()
+            //     }
+            // }
         })
     })
 }
